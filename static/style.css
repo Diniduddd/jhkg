@@ -1,0 +1,99 @@
+/* Keep vertical scrollbar visible to prevent centering jumps */
+html
+{
+    overflow-y: scroll
+}
+
+body
+{
+    background-color: #D3DEFA;
+}
+
+div#content a
+{
+    color: #0000ff;
+}
+
+/* Fonts */
+div#wrap,
+input,
+textarea
+{
+    font-size: 12pt;
+    font-family: Dosis;
+}
+
+/* top logo. */
+div#logo
+{
+}
+div#logo a
+{
+  color: #6482CC;
+  text-decoration: none;
+  text-align: center;
+}
+
+/* Wrapper for main content */
+div#wrap
+{
+  width: 90%;
+  min-width: 150px;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 15pt;
+  background-color: #fff;
+  border-radius: 5pt;
+  text-align: center;
+}
+
+input
+{
+    outline: none;
+    background-color: #fff;
+}
+
+/* Login box */
+form#login
+{
+    width: 50%;
+    min-width: 150px;
+    max-width: 250px;
+    text-align: center;
+    padding: 10pt 0;
+    margin: 10pt auto;
+    border: 0;
+}
+
+form#login input[type="text"],
+form#login input[type="email"],
+form#login input[type="password"]
+{
+  margin: 3pt;
+  border: 0;
+  border-bottom: 1px solid #888;
+}
+
+/* Submit button of login box */
+form#login input[type="submit"]
+{
+    margin: 3pt;
+    border: 3pt;
+    border-radius: 0pt;
+    background: transparent;
+}
+
+/* Contest submit box */
+form#contest textarea
+{
+  width: 100%;
+  min-height: 100pt;
+}
+
+/* The horizontal line */
+hr
+{
+    margin: 0;
+    border: 0;
+    border-top: 1px solid rgba(0,0,0,0.5);
+}

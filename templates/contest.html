@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if username %}
+Welcome, {{ username }}. <a href='/logout'>Log out</a>
+
+<h2>Contest!</h2>
+What is the sum of the prime factors of 18031292057221988231</a>?
+<form id='contest' action='submit' method='post'>
+    <textarea name='submission' placeholder="Paste your answer here."></textarea><br />
+    <input type='submit' value='submit'>
+</form>
+{% if message %}
+{{ message }}
+{% endif %}
+{% else %}
+You are not logged in.
+{% endif %}
+
+{% endblock %}
+
