@@ -26,9 +26,11 @@ textarea
 /* top logo. */
 div#logo
 {
+  margin: 0 0 10pt;
 }
 div#logo a
 {
+  font-size: 24pt;
   color: #6482CC;
   text-decoration: none;
   text-align: center;
@@ -40,51 +42,45 @@ div#wrap
   width: 90%;
   min-width: 150px;
   max-width: 500px;
+  text-align: center;
   margin: 0 auto;
+}
+
+/* main content */
+div#content
+{
   padding: 15pt;
   background-color: #fff;
   border-radius: 5pt;
-  text-align: center;
 }
 
 input
 {
-    outline: none;
-    background-color: #fff;
+  outline: none;
+  background-color: #fff;
 }
 
-/* Login box */
-form#login
-{
-    width: 50%;
-    min-width: 150px;
-    max-width: 250px;
-    text-align: center;
-    padding: 10pt 0;
-    margin: 10pt auto;
-    border: 0;
-}
-
-form#login input[type="text"],
-form#login input[type="email"],
-form#login input[type="password"]
+input[type="text"],
+input[type="email"],
+input[type="password"]
 {
   margin: 3pt;
   border: 0;
   border-bottom: 1px solid #888;
 }
 
-/* Submit button of login box */
-form#login input[type="submit"]
+/* Submit button of forms */
+input[type="submit"]
 {
-    margin: 3pt;
-    border: 3pt;
-    border-radius: 0pt;
-    background: transparent;
+  margin: 12pt 3pt 3pt;
+  padding: 3pt 5pt;
+  border: 1px solid #888;
+  border-radius: 2px;
+  background: transparent;
 }
 
 /* Contest submit box */
-form#contest textarea
+form textarea
 {
   width: 100%;
   min-height: 100pt;

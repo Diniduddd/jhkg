@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if username %}
+
+<p>You are already logged in, {{ username }}! <a href='/logout'>Log out</a></p>
+
+{% else %}
+
+<p id='status'>
+{% if message %}
+{{ message }}
+{% else %}
+register.
+{% endif %}
+</p>
+
+<input id='username' type='text' placeholder="username" /><br />
+<input id='password' type='password' placeholder="password" /><br />
+<input id='email' type='text' placeholder="email" /><br />
+<input id='school' type='text' placeholder="school (optional)" /><br />
+<input id='register_button' type='submit' value='register'>
+
+<script>
+/* Fancy-ass jquery registration. Could possibly replace with Bootstrap or Foundation. */
+function attempt_register() {
+    var username = $('#username').val();
+    var password = $('#password').val();
+    var email = $('#email').val()
+    var school = $('#school').val()
+
+    $('#submitbutton').addClass('active');
+    $.post('register_action',
+        { username:username, password:password, email:email, school:school },
+        function(data) {
+            $('#status').html(data);
+            if (data.indexOf('Welcome') == 0) {
+                /* Refresh to the login page. */
+                setTimeout(function() { document.location.href = '/'; }, 1000);
+            }
+            else {
+                $('#submitbutton').removeClass('active');
+            }
+        }
+    );
+
+    $('#status').html('please wait.');
+}
+
+function check_key(e) {
+    if (e.keyCode == 13) {
+        attempt_register();
+    }
+}
+
+$('#username').keyup(check_key);
+$('#password').keyup(check_key);
+$('#email').keyup(check_key);
+$('#school').keyup(check_key);
+$('#register_button').click(attempt_register);
+</script>
+
+{% endif %}
+
+{% endblock %}
+

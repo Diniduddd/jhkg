@@ -4,15 +4,21 @@
 
 <p>this is jhkg, jouhou kagaku. a canadian coding contest. can you hello world? fizzbuzz? welcome to the conspiracy! reach out and grab it.</p>
 
+<p>
+{% if message %}
+{{ message }}
+{% else %}
+login.
+{% endif %}
+</p>
+
 <form id='login' action='login' method='post'>
     <input name='username' type='text' placeholder="username" /><br />
     <input name='password' type='password' placeholder="password" /><br />
     <input type='submit' value='enter' />
 </form>
 
-{% if message %}
-{{ message }}
-{% endif %}
+<p>or <a href='/register'>register</a></p>
 
 {% endblock %}
 
