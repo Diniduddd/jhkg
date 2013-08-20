@@ -1,5 +1,5 @@
 import os
-import bcrypt
+from hashlib import sha512
 from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -17,9 +17,11 @@ class User(Base):
     school = Column(String)
 
     def __init__(self, username, password, email, school):
-        # Store only a hashed salted password.
+        # Store only a hashed password. Oh, and it's hashed with the username. lolol
+        h = sha512(password)
+        h.update(sha512(username).digest())
         self.username = username
-        self.passhash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        self.passhash = h.hexdigest()
         self.email = email
         self.school = school
 
@@ -54,8 +56,9 @@ def verify_login(username, password):
     session = Session()
     user = session.query(User).filter(User.username == username).first()
     if user:
-        pash = bcrypt.hashpw(password.encode('utf-8'), user.passhash.encode('utf-8'))
-        return user.passhash == pash
+        pash = sha512(password)
+        pash.update(sha512(username).digest())
+        return user.passhash == pash.hexdigest()
     return False
 
 def init_db():
