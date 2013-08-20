@@ -1,10 +1,11 @@
 A Canadian computer programming competition. Uses Heroku.
 
-To run it on your local machine:
+To run it on your local machine, first install dependencies like so:
 
-1. create a Python 2 virtualenv using `virtualenv venv`
-2. `pip install -r requirements.txt`
-3. gem install foreman
-4. foreman start
+1. Use your OS package manager to get ruby, gem, python2, and virtualenv2
+2. cd into jhkg
+3. create a Python 2 virtualenv using `virtualenv venv`
+4. `pip install -r requirements.txt`
+5. `gem install foreman`
 
-Dependencies are ruby, gem, python, and virtualenv -- you'll probably have to install them through your OS's package manager.
+Then run it with `foreman start`.
