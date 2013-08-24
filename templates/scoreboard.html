@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<p>this will eventually work.</p>
+
+<table>
+    <tr><th>Rank</th><th>Name</th><th>Score</th></tr>
+    {% for i,u,s in scores %}
+    <tr><td>{{ i }}</td><td>{{ u }}</td><td>{{ s }}</td></tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
+

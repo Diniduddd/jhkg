@@ -1,3 +1,9 @@
+/* normalize */
+*
+{
+  margin: 0;
+  padding: 0;
+}
 /* Keep vertical scrollbar visible to prevent centering jumps */
 html
 {
@@ -6,32 +12,63 @@ html
 
 body
 {
-    background-color: #D3DEFA;
-}
-
-div#content a
-{
-    color: #0000ff;
+    background-color: #fff;
 }
 
 /* Fonts */
+body,
 div#wrap,
 input,
 textarea
 {
-    font-size: 12pt;
     font-family: Dosis;
+    font-size: 12pt;
+}
+
+/* top bar. */
+div#topbar
+{
+  width: 100%;
+  color: #ccc;
+  background-color: #993333;
+  border-bottom: 1px solid black;
+}
+
+div#topbar a
+{
+  color: #D8ABAB;
+}
+
+div#top
+{
+  max-width: 600px;
+  margin: 0 auto;
+  clear: both;
+}
+
+/* nav objects */
+div#top a
+{
+  display: inline-block;
+}
+
+/* nav buttons */
+div#top #nav a.navbutton
+{
+  padding: 10pt 8pt 10pt 8pt;
+  color: #fff;
+  text-decoration: none;
+}
+div#top #nav a.navbutton:hover
+{
+  background-color: #822;
 }
 
 /* top logo. */
-div#logo
+div#top #logo
 {
-  margin: 0 0 10pt;
-}
-div#logo a
-{
-  font-size: 24pt;
-  color: #6482CC;
+  float: left;
+  margin: 6px;
   text-decoration: none;
   text-align: center;
 }
@@ -42,7 +79,6 @@ div#wrap
   width: 90%;
   min-width: 150px;
   max-width: 500px;
-  text-align: center;
   margin: 0 auto;
 }
 
@@ -52,6 +88,33 @@ div#content
   padding: 15pt;
   background-color: #fff;
   border-radius: 5pt;
+  color: #333;
+}
+
+div#content a
+{
+    color: #CE1D1D;
+}
+div#content a:hover
+{
+  color: #fff;
+  background: #CE1D1D;
+}
+
+/* Paragraphs and headers */
+div#content p
+{
+  margin-bottom: 5pt;
+}
+div#content h2
+{
+  margin-top: 15pt;
+  margin-bottom: 5pt;
+}
+
+div#content hr
+{
+  margin: 8pt 0;
 }
 
 input
@@ -72,7 +135,7 @@ input[type="password"]
 /* Submit button of forms */
 input[type="submit"]
 {
-  margin: 12pt 3pt 3pt;
+  margin: 8pt 3pt 3pt;
   padding: 3pt 5pt;
   border: 1px solid #888;
   border-radius: 2px;

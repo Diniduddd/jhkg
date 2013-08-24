@@ -2,8 +2,6 @@
 
 {% block content %}
 
-<p>this is jhkg, jouhou kagaku. a canadian coding contest. can you hello world? fizzbuzz? welcome to the conspiracy! reach out and grab it.</p>
-
 <p>
 {% if message %}
 {{ message }}
@@ -12,7 +10,7 @@ login.
 {% endif %}
 </p>
 
-<form id='login' action='login' method='post'>
+<form id='login' action='login_action' method='post'>
     <input name='username' type='text' placeholder="username" /><br />
     <input name='password' type='password' placeholder="password" /><br />
     <input type='submit' value='enter' />

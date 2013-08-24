@@ -14,12 +14,29 @@
     </script>
 </head>
 <body>
-<div id="wrap">
-<div id="top">
-    <div id="logo">
-        <a href='/'>JHKG.</a>
+<div id="topbar">
+    <div id="top">
+        <span id='logo'>
+            <a href='/'>
+                <img src='/static/logo.png' />
+            </a>
+        </span>
+        <span id='nav'>
+            <a href='/about' class='navbutton'>About</a>
+            <a href='/scoreboard' class='navbutton'>Scoreboard</a>
+            <span style='float:right'>
+                {% if username %}
+                Logged in as <a href='/user/{{ username }}'>{{ username }}</a>.
+                <a href='/logout' class='navbutton'>Logout</a>
+                {% else %}
+                <a href='/register' class='navbutton'>Register</a>
+                <a href='/login' class='navbutton'>Login</a>
+                {% endif %}
+            </span>
+        </span>
     </div>
 </div>
+<div id="wrap">
 <div id="content">
 {% block content %}
 {% endblock %}

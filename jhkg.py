@@ -46,8 +46,8 @@ def register():
     return my_render_template('register.html')
 
 # Login POST action.
-@app.route('/login', methods=['POST'])
-def login():
+@app.route('/login_action', methods=['POST'])
+def login_action():
     user = request.form["username"]
     pswd = request.form["password"]
 
@@ -56,6 +56,11 @@ def login():
         return redirect('/')
     else:
         return my_render_template('login.html', message="I don't recognize you.")
+
+# Login form.
+@app.route('/login')
+def login():
+    return my_render_template('login.html')
 
 # Logout.
 @app.route('/logout')
@@ -74,13 +79,26 @@ def profile(name):
 def userlist():
     return my_render_template('userlist.html', userlist=db.get_all_users())
 
+# Scoreboard.
+@app.route('/scoreboard')
+def scoreboard():
+    fake_db_scores = {'かたわ'.decode('utf-8'):9000, 'Scrubmaster':69, 'Yolomeister':9001}
+    # This converts the above dict into a list of triplets (rank, name, score).
+    display_scores = [(i+1,u[0],u[1]) for i,u in enumerate(sorted(list(fake_db_scores.items()), key=lambda x:x[1], reverse=True))]
+    return my_render_template('scoreboard.html', scores=display_scores)
+
+# About.
+@app.route('/about')
+def about():
+    return my_render_template('about.html')
+
 # Index/home/login.
 @app.route('/')
 def index():
     if g.user:
         return my_render_template('contest.html')
     else:
-        return my_render_template('login.html')
+        return my_render_template('home.html')
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
