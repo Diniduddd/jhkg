@@ -2,19 +2,64 @@
 
 {% block content %}
 
+<h2>Contest: {{ contest.name }}</h2>
+<p>Started at {{ contest.start_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
+<p>Ends at {{ end_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
+<p>{{ contest.desc }}</p>
+
+{% for p in problems %}
+
+<h2>{{ p.name }}</h2>
+<p>{{ p.desc }}</p>
+
 {% if username %}
-<h2>Contest!</h2>
-What is the sum of the prime factors of 18031292057221988231</a>?
-<form id='contest' action='submit' method='post'>
-    <textarea name='submission' placeholder="Paste your answer here."></textarea><br />
-    <input type='submit' value='submit'>
-</form>
-{% if message %}
-{{ message }}
-{% endif %}
+
+{% if p.name in user_solved %}
+You've solved this problem.
 {% else %}
-You are not logged in.
+
+<button id='solve_{{ p.name }}'>attempt to solve this problem</button>
+<div id='panel_{{ p.name }}' style='display:none'>
+    Input<br />
+    <textarea id='data_{{ p.name }}'></textarea><br />
+    <textarea id='textarea_{{ p.name }}' placeholder='Paste your output here'></textarea><br />
+    <button id='submit_{{ p.name }}'>submit!</button>
+</div>
+
+<script>
+// scopehack
+$('#solve_{{ p.name }}').click(function(){ solve_prob('{{p.name}}'); })
+$('#submit_{{ p.name }}').click(function(){ submit_prob('{{p.name}}'); })
+</script>
+
 {% endif %}
+
+{% endif %}
+
+{% endfor %}
+
+<script>
+function solve_prob(name) {
+    $.post('/contest_data',
+        { problem:name },
+        function (data) {
+            $('#data_'+name).html(data);
+            $('#panel_'+name).css('display', 'block');
+        }
+    );
+}
+function submit_prob(name) {
+    $.post('/contest_submit',
+        { problem:name,
+          submission:$('#textarea_'+name).val()
+        },
+        function(data) {
+            alert(data);
+            document.location.href = '/contest';
+        }
+    );
+}
+</script>
 
 {% endblock %}
 

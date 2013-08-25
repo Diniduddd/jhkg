@@ -1,0 +1,13 @@
+{% extends "admin.html" %}
+
+{% block admin_control %}
+
+<form id='login' action='/admin/new_contest/action' method='post'>
+    <input name='name' type='text' placeholder="name" /><br />
+    <textarea name='description' placeholder="description" /></textarea><br />
+    <input name='start_time' type='text' placeholder="YYYY MM DD HH MM" /><br />
+    <input type='submit' value='bring it into existence!' />
+</form>
+
+{% endblock %}
+

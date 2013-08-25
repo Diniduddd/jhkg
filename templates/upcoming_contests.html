@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if contests %}
+<p>The current time is {{ now }}.</p>
+<p>There is no contest right now. Upcoming contests:</p>
+{% for c in contests %}
+<h2>{{ c.name }}</h2>
+{{ c.start_time.strftime('%A %B %d, %Y at %H:%M') }}<br />
+{{ c.desc }}
+{% endfor %}
+{% else %}
+<p>There are no contests planned.</p>
+{% endif %}
+
+{% endblock %}
+

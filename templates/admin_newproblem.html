@@ -1,0 +1,19 @@
+{% extends "admin.html" %}
+
+{% block admin_control %}
+
+<form id='login' action='/admin/new_problem/action' method='post'>
+    <input name='name' type='text' placeholder="name" /><br />
+    <textarea name='description' placeholder="problem statement" /></textarea><br />
+    <input name='grader' type='text' placeholder="grader" /><br />
+    Contest: <select name='contest'>
+        {% for c in contests %}
+        <option value='{{c.name}}'>{{c.name}}</option>
+        {% endfor %}
+    </select><br />
+    <input name='priority' type='text' placeholder="priority" /> (lower priority problems are shown first)<br />
+    <input type='submit' value='let it be known!' />
+</form>
+
+{% endblock %}
+

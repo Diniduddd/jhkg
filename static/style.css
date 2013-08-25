@@ -19,7 +19,9 @@ body
 body,
 div#wrap,
 input,
-textarea
+textarea,
+select,
+button
 {
     font-family: Dosis;
     font-size: 12pt;
@@ -114,7 +116,7 @@ div#content h2
 
 div#content hr
 {
-  margin: 8pt 0;
+  margin: 15pt 0;
 }
 
 input
@@ -133,7 +135,10 @@ input[type="password"]
 }
 
 /* Submit button of forms */
-input[type="submit"]
+/* and other buttony things */
+input[type="submit"],
+select,
+button
 {
   margin: 8pt 3pt 3pt;
   padding: 3pt 5pt;
