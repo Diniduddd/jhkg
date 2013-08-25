@@ -137,7 +137,7 @@ def admin_newproblem_action():
 @app.route('/admin/new_contest')
 def admin_newcontest():
     if g.user in admins:
-        return my_render_template('admin_newcontest.html')
+        return my_render_template('admin_newcontest.html', now=datetime.now())
     else:
         return page_not_found()
 
