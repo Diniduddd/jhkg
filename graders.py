@@ -8,4 +8,4 @@ def yolo(data, output):
 
 # The "split sum" grader. Sums the space-separated integers.
 def splitsum(data, output):
-    return sum(map(int, data.split())) == int(output)
+    return str(sum(map(int, data.split()))) == output

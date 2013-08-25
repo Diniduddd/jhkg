@@ -171,10 +171,10 @@ def contest():
 def contest_data():
     problem = request.form["problem"]
     grader_name = db.get_problem(problem).grader
-    gen = getattr(inputgen, grader_name)
+    gen = getattr(inputgen, grader_name)()
     given_data[g.user] = gen
     given_time[g.user] = datetime.now()
-    return gen()
+    return gen
 
 # Contest submission.
 @app.route('/contest_submit', methods=['POST'])
