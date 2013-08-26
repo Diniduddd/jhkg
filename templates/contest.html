@@ -2,9 +2,18 @@
 
 {% block content %}
 
-<h2>Contest: {{ contest.name }}</h2>
+{% if contest %}
+<h2>{{ contest.name }}</h2>
+
+{# If the contest is still going on... #}
+{% if contest.start_time < now < contest.start_time+contest.duration %}
 <p>Started at {{ contest.start_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
-<p>Ends at {{ end_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
+<p>Ends at {{ (contest.start_time+contest.duration).strftime('%A %B %d, %Y at %H:%M') }}.</p>
+{% else %}
+<p>Started at {{ contest.start_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
+<p>Ended at {{ (contest.start_time+contest.duration).strftime('%A %B %d, %Y at %H:%M') }}.</p>
+{% endif %}
+
 <p>{{ contest.desc }}</p>
 
 {% for p in problems %}
@@ -55,11 +64,17 @@ function submit_prob(name) {
         },
         function(data) {
             alert(data);
-            document.location.href = '/contest';
+            document.location.href = '/contest/{{contest.name}}';
         }
     );
 }
 </script>
+
+{% else %}
+
+That contest is totally mitsukarimasen, yo.
+
+{% endif %}
 
 {% endblock %}
 

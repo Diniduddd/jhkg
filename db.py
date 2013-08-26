@@ -1,6 +1,6 @@
 import os
 from hashlib import sha512
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, func, Index, create_engine
+from sqlalchemy import Column, Integer, String, DateTime, Interval, ForeignKey, func, Index, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta
@@ -37,14 +37,16 @@ class User(Base):
 class Contest(Base):
     __tablename__ = 'contest'
 
-    name = Column(String, primary_key=True)
+    name = Column(String, primary_key=True, unique=True)
     desc = Column(String)
     start_time = Column(DateTime, index=True)
+    duration = Column(Interval)
 
-    def __init__(self, name, desc, start_time):
+    def __init__(self, name, desc, start_time, duration=timedelta(hours=3)):
         self.name = name
         self.desc = desc
         self.start_time = start_time
+        self.duration = duration
 
 # Stores problems.
 class Problem(Base):
@@ -128,6 +130,19 @@ def get_upcoming_contests():
                all()
     return contests or []
 
+def get_all_contests():
+    session = Session()
+    contests = session.query(Contest).\
+               all()
+    return contests
+
+def get_contest(name):
+    session = Session()
+    contest = session.query(Contest).\
+              filter(Contest.name == name).\
+              first()
+    return contest
+
 def new_contest(name, desc, start_time):
     """
     creates a new contest.
@@ -157,3 +172,16 @@ def get_problem(name):
 def init_db():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+
+def populate():
+    """
+    Populates the database with test data.
+    """
+    now = datetime.now()
+    create_new_user('admin', 'admin', 'admin@admin.tk', school='MIT')
+    new_contest('IOI Live Now', 'Brave The Seas With IOI Live NoW!', (now-timedelta(hours=2)).strftime('%Y-%m-%d %H:%M'))
+    new_contest('IOI Qualification Round 1', 'IOI 2014 Qualification Round 1', (now+timedelta(hours=1, minutes=15)).strftime('%Y-%m-%d %H:%M'))
+    new_contest('JHKG 2013 Round 1', 'The first round in the JHKG High Koding Games', '2013-09-17 15:15')
+    new_contest('The Past Contest, Yo', 'This already happened!', '2012-09-17 15:15')
+    new_problem('yolo', 'Just YOLO!', 'yolo', 'IOI Live Now')
+    new_problem('split sums', 'Add up 100 positive integers. Will fit into a long int.', 'splitsum', 'IOI Live Now')

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if current_contests %}
+<h1>Current contest</h1>
+{% for c in current_contests %}
+<h2><a href='/contest/{{ c.name }}'>{{ c.name }}</a></h2>
+<p>Started at {{ c.start_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
+<p>Will end at at {{ (c.start_time+c.duration).strftime('%A %B %d, %Y at %H:%M') }}.</p>
+<p>{{ c.desc }}</p>
+{% endfor %}
+{% endif %}
+
+{% if upcoming_contests %}
+<h1>Upcoming contests</h1>
+{% for c in upcoming_contests %}
+<h2><a href='/contest/{{ c.name }}'>{{ c.name }}</a></h2>
+<p>{{ c.desc }}</p>
+{% endfor %}
+{% endif %}
+
+{% if past_contests %}
+<h1>Past contests</h1>
+{% for c in past_contests %}
+<h2><a href='/contest/{{ c.name }}'>{{ c.name }}</a></h2>
+<p>{{ c.desc }}</p>
+{% endfor %}
+{% endif %}
+
+{% endblock %}
+

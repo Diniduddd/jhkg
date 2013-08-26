@@ -29,7 +29,7 @@ def before_request():
 
 # render_template with automatic value for username
 def my_render_template(template_name, **kwargs):
-    return render_template(template_name, username=g.user, **kwargs)
+    return render_template(template_name, username=g.user, now=datetime.now(), **kwargs)
 
 @app.errorhandler(404)
 def page_not_found(e=None):
@@ -137,7 +137,7 @@ def admin_newproblem_action():
 @app.route('/admin/new_contest')
 def admin_newcontest():
     if g.user in admins:
-        return my_render_template('admin_newcontest.html', now=datetime.now())
+        return my_render_template('admin_newcontest.html')
     else:
         return page_not_found()
 
@@ -151,20 +151,26 @@ def admin_newcontest_action():
     db.new_contest(name, desc, start_time)
     return redirect('/admin')
 
+# A certain contest.
+@app.route('/contest/<contest_name>')
+def show_contest(contest_name):
+    contest = db.get_contest(contest_name)
+    problems = db.get_contest_problems(contest_name)
+    return my_render_template('contest.html', contest=contest, problems=problems, user_solved=done_problem[g.user])
+
 # Contest.
-@app.route('/contest')
+@app.route('/contests')
 def contest():
-    # Show them contest info!
-    current_contest, problems = db.get_current_contest()
-    if current_contest:
-        return my_render_template('contest.html',
-                contest = current_contest,
-                end_time = current_contest.start_time + timedelta(hours=3),
-                problems=problems,
-                user_solved = done_problem[g.user])
-    else:
-        upcoming_contests = db.get_upcoming_contests()
-        return my_render_template('upcoming_contests.html', contests=upcoming_contests, now=datetime.now())
+    contests = db.get_all_contests()
+    now = datetime.now()
+    past_contests = sorted([c for c in contests if c.start_time + c.duration < now], key=lambda c:c.start_time, reverse=True)
+    upcoming_contests = sorted([c for c in contests if c.start_time > now], key=lambda c:c.start_time)
+    current_contests = [c for c in contests if c.start_time < now and c.start_time + c.duration > now]
+    return my_render_template('contest_list.html',
+            current_contests = current_contests,
+            upcoming_contests = upcoming_contests,
+            past_contests = past_contests
+            )
 
 # Contest data request.
 @app.route('/contest_data', methods=['POST'])
