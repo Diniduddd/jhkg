@@ -2,7 +2,7 @@
 
 {% block admin_control %}
 
-<p>It is currently {{ now.strftime('%Y-%m-%d %H:%M') }}.</p>
+<p>It is currently {{ now | prettydatetime }}.</p>
 
 <form id='login' action='/admin/new_contest/action' method='post'>
     <input name='name' type='text' placeholder="name" /><br />

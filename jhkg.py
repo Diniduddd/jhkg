@@ -19,13 +19,37 @@ given_data = {}
 # Stores the time at which the data were given.
 given_time = {}
 
-# Stores each user's completed problems (temporary)
+# Stores each user's completed problems (temporary) TODO
 # problem_name in done_problem[user] iff user finished problem_name
 done_problem = defaultdict(set)
+
+# Time utils for jinja2 templates.
+# These all take a datetime.
+
+# Converts time into user's local timezone.
+def localtime(t):
+    return t+g.timezone
+app.jinja_env.globals['localtime'] = localtime
+
+# Pretty formatting of date and time
+@app.template_filter('prettydate')
+def prettydate(d):
+    return d.strftime('%A %B %d, %Y')
+@app.template_filter('prettytime')
+def prettytime(t):
+    # Remove leading zeroes too
+    return t.strftime('%I:%M %p').lstrip('0')
+@app.template_filter('prettydatetime')
+def prettydatetime(dt):
+    return '%s, %s' % (prettytime(dt), prettydate(dt))
 
 @app.before_request
 def before_request():
     g.user = session.get('username')
+
+    # Get timezone from cookie
+    utc_delta_sec = int(request.cookies.get('timezone') or '0')
+    g.timezone = timedelta(seconds=utc_delta_sec)
 
 # render_template with automatic value for username
 def my_render_template(template_name, **kwargs):
@@ -156,7 +180,12 @@ def admin_newcontest_action():
 def show_contest(contest_name):
     contest = db.get_contest(contest_name)
     problems = db.get_contest_problems(contest_name)
-    return my_render_template('contest.html', contest=contest, problems=problems, user_solved=done_problem[g.user])
+    end_time = contest.start_time + contest.duration
+    return my_render_template('contest.html',
+            contest = contest,
+            problems = [(i+1,p) for i,p in enumerate(problems)],
+            user_solved = done_problem[g.user],
+            end_time = end_time)
 
 # Contest.
 @app.route('/contests')

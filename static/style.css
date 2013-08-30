@@ -70,7 +70,7 @@ div#top #nav a.navbutton:hover
 div#top #logo
 {
   float: left;
-  margin: 6px;
+  margin: 8px;
   text-decoration: none;
   text-align: center;
 }
@@ -135,7 +135,7 @@ input[type="text"],
 input[type="email"],
 input[type="password"]
 {
-  margin: 3pt;
+  margin: 3pt 0;
   border: 0;
   border-bottom: 1px solid #888;
 }
@@ -146,7 +146,7 @@ input[type="submit"],
 select,
 button
 {
-  margin: 8pt 3pt 3pt;
+  margin: 3pt 0;
   padding: 3pt 5pt;
   border: 1px solid #888;
   border-radius: 2px;

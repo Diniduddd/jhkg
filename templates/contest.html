@@ -3,22 +3,38 @@
 {% block content %}
 
 {% if contest %}
-<h2>{{ contest.name }}</h2>
+<h1>{{ contest.name }}</h1>
 
-{# If the contest is still going on... #}
+{# Contest happening now #}
 {% if contest.start_time < now < contest.start_time+contest.duration %}
+<p>{{ localtime(contest.start_time) | prettydate }}</p>
 <p>Started at {{ contest.start_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
+<p>Started at {{ contest.start_time  }}.</p>
 <p>Ends at {{ (contest.start_time+contest.duration).strftime('%A %B %d, %Y at %H:%M') }}.</p>
+
+{# Contest is long over #}
+{% elif contest.start_time < now %}
+<p>{{ localtime(contest.start_time) | prettydate }}</p>
+<p>{{ contest.start_time | prettytime }} - {{ end_time | prettytime }}</p>
+<p>This is a past contest. You will not get scoreboard points for solving these problems, but it's still great practice!</p>
+
+{# Contest is in future #}
 {% else %}
-<p>Started at {{ contest.start_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
-<p>Ended at {{ (contest.start_time+contest.duration).strftime('%A %B %d, %Y at %H:%M') }}.</p>
+<p>Will start at {{ contest.start_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
+<p>Will last {{ contest.duration }}.</p>
 {% endif %}
 
+{#
+<h2>Details</h2>
 <p>{{ contest.desc }}</p>
+#}
 
-{% for p in problems %}
+{# Display contest problems only if it has started #}
+{% if contest.start_time < now %}
+<h1>Problems</h1>
+{% for p_num,p in problems %}
 
-<h2>{{ p.name }}</h2>
+<h2>Problem {{ p_num }}: {{ p.name }}</h2>
 <p>{{ p.desc }}</p>
 
 {% if username %}
@@ -42,9 +58,7 @@ $('#submit_{{ p.name }}').click(function(){ submit_prob('{{p.name}}'); })
 </script>
 
 {% endif %}
-
 {% endif %}
-
 {% endfor %}
 
 <script>
@@ -69,6 +83,8 @@ function submit_prob(name) {
     );
 }
 </script>
+
+{% endif %}
 
 {% else %}
 
