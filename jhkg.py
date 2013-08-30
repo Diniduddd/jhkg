@@ -28,7 +28,7 @@ done_problem = defaultdict(set)
 
 # Converts time into user's local timezone.
 def localtime(t):
-    return t+g.timezone
+    return t-g.timezone
 app.jinja_env.globals['localtime'] = localtime
 
 # Pretty formatting of date and time
