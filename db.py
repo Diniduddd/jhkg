@@ -112,7 +112,7 @@ def get_contest_problems(name):
 
 def get_current_contest():
     session = Session()
-    now = datetime.now()
+    now = datetime.utcnow()
     contest = session.query(Contest).\
               filter(now > Contest.start_time).\
               filter(now < Contest.start_time + timedelta(hours=3)).\
@@ -124,7 +124,7 @@ def get_current_contest():
 
 def get_upcoming_contests():
     session = Session()
-    now = datetime.now()
+    now = datetime.utcnow()
     contests = session.query(Contest).\
                filter(now < Contest.start_time + timedelta(hours=3)).\
                all()
@@ -177,7 +177,7 @@ def populate():
     """
     Populates the database with test data.
     """
-    now = datetime.now()
+    now = datetime.utcnow()
     create_new_user('admin', 'admin', 'admin@admin.tk', school='MIT')
     new_contest('IOI Live Now', 'Brave The Seas With IOI Live NoW!', (now-timedelta(hours=2)).strftime('%Y-%m-%d %H:%M'))
     new_contest('IOI Qualification Round 1', 'IOI 2014 Qualification Round 1', (now+timedelta(hours=1, minutes=15)).strftime('%Y-%m-%d %H:%M'))

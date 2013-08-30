@@ -53,7 +53,7 @@ def before_request():
 
 # render_template with automatic value for username
 def my_render_template(template_name, **kwargs):
-    return render_template(template_name, username=g.user, now=datetime.now(), **kwargs)
+    return render_template(template_name, username=g.user, now=datetime.utcnow(), **kwargs)
 
 @app.errorhandler(404)
 def page_not_found(e=None):
@@ -191,7 +191,7 @@ def show_contest(contest_name):
 @app.route('/contests')
 def contest():
     contests = db.get_all_contests()
-    now = datetime.now()
+    now = datetime.utcnow()
     past_contests = sorted([c for c in contests if c.start_time + c.duration < now], key=lambda c:c.start_time, reverse=True)
     upcoming_contests = sorted([c for c in contests if c.start_time > now], key=lambda c:c.start_time)
     current_contests = [c for c in contests if c.start_time < now and c.start_time + c.duration > now]
@@ -208,7 +208,7 @@ def contest_data():
     grader_name = db.get_problem(problem).grader
     gen = getattr(inputgen, grader_name)()
     given_data[g.user] = gen
-    given_time[g.user] = datetime.now()
+    given_time[g.user] = datetime.utcnow()
     return gen
 
 # Contest submission.
