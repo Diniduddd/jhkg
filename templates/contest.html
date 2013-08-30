@@ -8,19 +8,19 @@
 {# Contest happening now #}
 {% if contest.start_time < now < contest.start_time+contest.duration %}
 <p>{{ localtime(contest.start_time) | prettydate }}</p>
-<p>Started at {{ contest.start_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
-<p>Started at {{ contest.start_time  }}.</p>
-<p>Ends at {{ (contest.start_time+contest.duration).strftime('%A %B %d, %Y at %H:%M') }}.</p>
+<p>Started at {{ localtime(contest.start_time) | prettytime }}.</p>
+<p>Will end at {{ localtime(contest.start_time+contest.duration) | prettytime }}.</p>
 
 {# Contest is long over #}
 {% elif contest.start_time < now %}
 <p>{{ localtime(contest.start_time) | prettydate }}</p>
-<p>{{ contest.start_time | prettytime }} - {{ end_time | prettytime }}</p>
+<p>{{ localtime(contest.start_time) | prettytime }} - {{ localtime(end_time) | prettytime }}</p>
 <p>This is a past contest. You will not get scoreboard points for solving these problems, but it's still great practice!</p>
 
 {# Contest is in future #}
 {% else %}
-<p>Will start at {{ contest.start_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
+<p>{{ localtime(contest.start_time) | prettydate }}</p>
+<p>Will start at {{ localtime(contest.start_time) | prettytime }}.</p>
 <p>Will last {{ contest.duration }}.</p>
 {% endif %}
 

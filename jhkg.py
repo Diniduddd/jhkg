@@ -49,7 +49,7 @@ def before_request():
 
     # Get timezone from cookie
     utc_delta_sec = int(request.cookies.get('timezone') or '0')
-    g.timezone = timedelta(seconds=utc_delta_sec)
+    g.timezone = timedelta(minutes=utc_delta_sec)
 
 # render_template with automatic value for username
 def my_render_template(template_name, **kwargs):
