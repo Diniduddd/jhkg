@@ -2,13 +2,13 @@
 
 {% block content %}
 
-<p>
+<h1>
 {% if message %}
 {{ message }}
 {% else %}
-login.
+Login
 {% endif %}
-</p>
+</h1>
 
 <form id='login' action='login_action' method='post'>
     <input name='username' type='text' placeholder="username" /><br />

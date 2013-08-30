@@ -104,19 +104,25 @@ div#content a:hover
 }
 
 /* Paragraphs and headers */
-div#content p
+div#content p,
+div#content h1,
+div#content h2
 {
+  font-weight: 400;
   margin-bottom: 5pt;
+}
+div#content h1
+{
+  margin-top: 24pt;
 }
 div#content h2
 {
-  margin-top: 15pt;
-  margin-bottom: 5pt;
+  margin-top: 12pt;
 }
 
 div#content hr
 {
-  margin: 15pt 0;
+  margin: 30pt 0;
 }
 
 input

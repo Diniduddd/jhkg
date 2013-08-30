@@ -86,7 +86,7 @@ def logout():
 @app.route('/user/<name>')
 def profile(name):
     user = db.get_user(name)
-    return my_render_template('profile.html', name=user.username, school=user.school)
+    return my_render_template('profile.html', user=user)
 
 # User list.
 @app.route('/userlist')

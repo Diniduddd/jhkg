@@ -2,9 +2,13 @@
 
 {% block content %}
 
-<h1>{{name}}</h1>
+{% if user %}
+<h1>{{user.name}}</h1>
 
-{{name}} is an elite badass coder{% if school %} at {{ school }}{% endif %}. That's all we know, honest!
+{{user.name}} is an elite badass coder{% if user.school %} at {{ user.school }}{% endif %}. That's all we know, honest!
+{% else %}
+I couldn't find such a user. Are you sure they exist?
+{% endif %}
 
 {% endblock %}
 
