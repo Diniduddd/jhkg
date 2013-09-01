@@ -184,7 +184,10 @@ def show_contest(contest_name):
     contest = db.get_contest(contest_name)
     if contest:
         problems = db.get_contest_problems(contest_name)
-        user_solved = { p.name:db.get_score(g.user, p.name) for p in problems }
+        if g.user:
+            user_solved = { p.name:db.get_score(g.user, p.name) for p in problems }
+        else:
+            user_solved = {}
         end_time = contest.start_time + contest.duration
         return my_render_template('contest.html',
                 contest = contest,
