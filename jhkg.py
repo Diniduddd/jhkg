@@ -5,6 +5,7 @@ import datetime
 from collections import defaultdict
 from flask import Flask, Markup, render_template, send_from_directory, redirect, session, request, g
 import db
+from db import uidify
 from datetime import datetime, timedelta
 import inputgen
 import graders
@@ -18,10 +19,6 @@ admins = {'admin'}
 given_data = {}
 # Stores the time at which the data were given.
 given_time = {}
-
-# Stores each user's completed problems (temporary) TODO
-# problem_name in done_problem[user] iff user finished problem_name
-done_problem = defaultdict(set)
 
 # Time utils for jinja2 templates.
 # These all take a datetime.
@@ -43,6 +40,9 @@ def prettytime(t):
 def prettydatetime(dt):
     return '%s, %s' % (prettytime(dt), prettydate(dt))
 
+# Replacing spaces with dashes for e.g. javascript
+app.jinja_env.filters['uidify'] = uidify
+
 @app.before_request
 def before_request():
     g.user = session.get('username')
@@ -50,6 +50,9 @@ def before_request():
     # Get timezone from cookie
     utc_delta_sec = int(request.cookies.get('timezone') or '0')
     g.timezone = timedelta(minutes=utc_delta_sec)
+
+    # time of request
+    g.now = datetime.utcnow()
 
 # render_template with automatic value for username
 def my_render_template(template_name, **kwargs):
@@ -120,9 +123,9 @@ def userlist():
 # Scoreboard.
 @app.route('/scoreboard')
 def scoreboard():
-    fake_db_scores = {'かたわ'.decode('utf-8'):9000, 'Scrubmaster':69, 'Yolomeister':9001}
+    scores = db.get_all_scores()
     # This converts the above dict into a list of triplets (rank, name, score).
-    display_scores = [(i+1,u[0],u[1]) for i,u in enumerate(sorted(list(fake_db_scores.items()), key=lambda x:x[1], reverse=True))]
+    display_scores = [(i+1,u[0],u[1]) for i,u in enumerate(sorted(list(scores.items()), key=lambda x:x[1], reverse=True))]
     return my_render_template('scoreboard.html', scores=display_scores)
 
 # About.
@@ -179,22 +182,25 @@ def admin_newcontest_action():
 @app.route('/contest/<contest_name>')
 def show_contest(contest_name):
     contest = db.get_contest(contest_name)
-    problems = db.get_contest_problems(contest_name)
-    end_time = contest.start_time + contest.duration
-    return my_render_template('contest.html',
-            contest = contest,
-            problems = [(i+1,p) for i,p in enumerate(problems)],
-            user_solved = done_problem[g.user],
-            end_time = end_time)
+    if contest:
+        problems = db.get_contest_problems(contest_name)
+        user_solved = { p.name:db.get_score(g.user, p.name) for p in problems }
+        end_time = contest.start_time + contest.duration
+        return my_render_template('contest.html',
+                contest = contest,
+                problems = [(i+1,p) for i,p in enumerate(problems)],
+                user_solved = user_solved,
+                end_time = end_time)
+    else:
+        return page_not_found()
 
 # Contest.
 @app.route('/contests')
 def contest():
     contests = db.get_all_contests()
-    now = datetime.utcnow()
-    past_contests = sorted([c for c in contests if c.start_time + c.duration < now], key=lambda c:c.start_time, reverse=True)
-    upcoming_contests = sorted([c for c in contests if c.start_time > now], key=lambda c:c.start_time)
-    current_contests = [c for c in contests if c.start_time < now and c.start_time + c.duration > now]
+    past_contests = sorted([c for c in contests if c.start_time + c.duration < g.now], key=lambda c:c.start_time, reverse=True)
+    upcoming_contests = sorted([c for c in contests if c.start_time > g.now], key=lambda c:c.start_time)
+    current_contests = [c for c in contests if c.start_time < g.now and c.start_time + c.duration > g.now]
     return my_render_template('contest_list.html',
             current_contests = current_contests,
             upcoming_contests = upcoming_contests,
@@ -204,27 +210,40 @@ def contest():
 # Contest data request.
 @app.route('/contest_data', methods=['POST'])
 def contest_data():
-    problem = request.form["problem"]
-    grader_name = db.get_problem(problem).grader
-    gen = getattr(inputgen, grader_name)()
-    given_data[g.user] = gen
-    given_time[g.user] = datetime.utcnow()
-    return gen
+    problem = db.get_problem(request.form["problem"])
+    if problem:
+        grader_name = problem.grader
+        gen = getattr(inputgen, grader_name)()
+        given_data[g.user] = gen
+        given_time[g.user] = g.now
+        return gen
+    else:
+        return "I don't know that problem, dude."
 
 # Contest submission.
 @app.route('/contest_submit', methods=['POST'])
 def contest_submission():
-    problem = request.form["problem"]
+    problem_name = request.form["problem"]
     submission = request.form["submission"]
-    grader_name = db.get_problem(problem).grader
+    problem = db.get_problem(problem_name)
+    if problem:
+        grader_name = problem.grader
+        gr_func = getattr(graders, grader_name)
+        score = gr_func(given_data[g.user], submission)
+        if score:
+            # They were right!
+            # Add bonus points for time
+            contest = db.get_contest(problem.contest)
+            time_elapsed = g.now - contest.start_time
+            score += round(100-100*(time_elapsed.total_seconds()/contest.duration.total_seconds()))
 
-    gr_func = getattr(graders, grader_name)
-    if gr_func(given_data[g.user], submission):
-        # They were right!
-        done_problem[g.user].add(problem)
-        return 'Correct!'
-
-    return 'Incorrect.'
+            db.set_score(g.user, problem.uid, score)
+            
+            return 'You got %d points!' % score
+        else:
+            return 'Incorrect.'
+    else:
+        return 'What exactly are you trying to do?'
 
 # Page for individual problems.
 #@app.route('/problem/<problem_name>')

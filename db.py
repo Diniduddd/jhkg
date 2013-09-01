@@ -1,4 +1,5 @@
 import os
+from collections import defaultdict
 from hashlib import sha512
 from sqlalchemy import Column, Integer, String, DateTime, Interval, ForeignKey, func, Index, create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -9,40 +10,48 @@ engine = create_engine(os.environ['DATABASE_URL'])
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
+def uidify(string):
+    return string.lower().replace(' ', '-')
+
 # Stores user login and profile information.
 class User(Base):
     __tablename__ = 'user'
 
-    username = Column(String, primary_key=True)
+    uid = Column(String, primary_key=True, index=True, unique=True)
+    username = Column(String, index=True, unique=True)
     passhash = Column(String)
     email = Column(String, unique=True)
     school = Column(String)
 
     def __init__(self, username, password, email, school):
-        # Store only a hashed password. Oh, and it's hashed with the username. lolol
-        h = sha512(password)
-        h.update(sha512(username.lower()).digest())
+        self.uid = uidify(username)
 
-        # Lowercase username for case insensitive login
-        self.username = username.lower()
+        # Store only a hashed password. Oh, and it's hashed with the uid. lolol
+        h = sha512(password)
+        h.update(sha512(self.uid).digest())
+
+        self.username = username
 
         self.passhash = h.hexdigest()
         self.email = email
         self.school = school
 
     def __repr__(self):
-        return "User('%s')" % (self.username)
+        return "User('%s')" % (self.uid)
 
 # Stores contest data.
 class Contest(Base):
     __tablename__ = 'contest'
 
-    name = Column(String, primary_key=True, unique=True)
+    uid = Column(String, primary_key=True, index=True, unique=True)
+    name = Column(String, index=True, unique=True)
     desc = Column(String)
     start_time = Column(DateTime, index=True)
     duration = Column(Interval)
 
     def __init__(self, name, desc, start_time, duration=timedelta(hours=3)):
+        # In the UID, name is lowercased and spaces are replaced with dashes
+        self.uid = uidify(name)
         self.name = name
         self.desc = desc
         self.start_time = start_time
@@ -52,19 +61,35 @@ class Contest(Base):
 class Problem(Base):
     __tablename__ = 'problem'
 
-    name = Column(String, primary_key=True)
+    uid = Column(String, primary_key=True, index=True, unique=True)
+    name = Column(String, index=True, unique=True)
     desc = Column(String)
     grader = Column(String)
-    contest = Column(String, ForeignKey('contest.name'), index=True)
+    contest = Column(String, ForeignKey('contest.uid'), index=True)
     # Lower priority problems appear first.
     priority = Column(Integer)
 
     def __init__(self, name, desc, grader, contest, priority):
+        # In the UID, name is lowercased and spaces are replaced with dashes
+        self.uid = uidify(name)
         self.name = name
         self.desc = desc
         self.grader = grader
-        self.contest = contest
+        self.contest = uidify(contest)
         self.priority = priority
+
+# Stores which users have solved which problems.
+class Solution(Base):
+    __tablename__ = 'solution'
+
+    user = Column(String, ForeignKey('user.uid'), primary_key=True, index=True)
+    problem = Column(String, ForeignKey('problem.uid'), primary_key=True, index=True)
+    score = Column(Integer)
+
+    def __init__(self, user, problem, score):
+        self.user = uidify(user)
+        self.problem = uidify(problem)
+        self.score = score
 
 def create_new_user(username, password, email, school=''):
     session = Session()
@@ -74,8 +99,8 @@ def create_new_user(username, password, email, school=''):
         return 'empty fields'
 
     # Check if user already exists
-    userExists = session.query(User).filter(User.username == username.lower()).count()
-    emailExists = session.query(User).filter(User.email == email).count()
+    userExists = get_user(username)
+    emailExists = session.query(User).filter(func.lower(User.email) == func.lower(email)).count()
 
     if userExists:
         return 'user exists'
@@ -91,22 +116,22 @@ def get_all_users():
     return (u.username for u in Session().query(User).all())
 
 def get_user(username):
-    return Session().query(User).filter(User.username == username.lower()).first()
+    return Session().query(User).filter(User.uid == uidify(username)).first()
 
 def verify_login(username, password):
     """ Returns true iff the given user/pass combo is valid. """
     session = Session()
-    user = session.query(User).filter(User.username == username.lower()).first()
+    user = get_user(username)
     if user:
         pash = sha512(password)
-        pash.update(sha512(username.lower()).digest())
+        pash.update(sha512(user.uid).digest())
         return user.passhash == pash.hexdigest()
     return False
 
-def get_contest_problems(name):
+def get_contest_problems(contest_name):
     session = Session()
     probs = session.query(Problem).\
-            filter(Problem.contest == name).\
+            filter(Problem.contest == uidify(contest_name)).\
             all()
     return probs
 
@@ -139,7 +164,7 @@ def get_all_contests():
 def get_contest(name):
     session = Session()
     contest = session.query(Contest).\
-              filter(Contest.name == name).\
+              filter(Contest.uid == uidify(name)).\
               first()
     return contest
 
@@ -169,6 +194,37 @@ def get_problem(name):
            first()
     return prob
 
+def get_score(username, problem_name):
+    result = Session().query(Solution).\
+            filter(Solution.user == uidify(username)).\
+            filter(Solution.problem == uidify(problem_name)).\
+            first()
+    if result:
+        return result.score
+    else:
+        return 0
+
+def get_all_scores():
+    # we should probably cache this result TODO
+    scores = defaultdict(int)
+    for s in Session().query(Solution).all():
+        scores[s.user] += s.score
+    return scores
+
+def set_score(username, problem_name, score):
+    session = Session()
+    cur_score = session.query(Solution).\
+            filter(Solution.user == uidify(username)).\
+            filter(Solution.problem == uidify(problem_name)).\
+            first()
+    if cur_score:
+        # Don't let a lower score replace a higher one
+        cur_score.score = max(cur_score.score, score)
+    else:
+        new_score = Solution(username, problem_name, score)
+        session.add(new_score)
+    session.commit()
+
 def init_db():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -183,5 +239,5 @@ def populate():
     new_contest('IOI Qualification Round 1', 'IOI 2014 Qualification Round 1', (now+timedelta(hours=1, minutes=15)).strftime('%Y-%m-%d %H:%M'))
     new_contest('JHKG 2013 Round 1', 'The first round in the JHKG High Koding Games', '2013-09-17 15:15')
     new_contest('The Past Contest, Yo', 'This already happened!', '2012-09-17 15:15')
-    new_problem('yolo', 'Just YOLO!', 'yolo', 'IOI Live Now')
-    new_problem('split sums', 'Add up 100 positive integers. Will fit into a long int.', 'splitsum', 'IOI Live Now')
+    new_problem('yolo', 'Submit anything to get full marks.', 'yolo', 'IOI Live Now')
+    new_problem('split sums', 'You will be given a text box with 100 positive integers. Their sum is below 2^32. You must compute their sum. You will have four minutes to paste their sum in the solution box.', 'splitsum', 'IOI Live Now')

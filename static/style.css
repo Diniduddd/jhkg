@@ -7,12 +7,14 @@
 /* Keep vertical scrollbar visible to prevent centering jumps */
 html
 {
-    overflow-y: scroll
+  overflow-y: scroll
+  height: 100%;
 }
 
 body
 {
-    background-color: #fff;
+  background-color: #fff;
+  height: 100%;
 }
 
 /* Fonts */
@@ -78,15 +80,19 @@ div#top #logo
 /* Wrapper for main content */
 div#wrap
 {
-  width: 90%;
-  min-width: 150px;
-  max-width: 500px;
+  position: absolute;
+  width: 100%;
+  min-height: 100%;
   margin: 0 auto;
 }
 
 /* main content */
 div#content
 {
+  width: 90%;
+  min-width: 150px;
+  max-width: 500px;
+  margin: 0 auto 100pt;
   padding: 15pt;
   background-color: #fff;
   border-radius: 5pt;
@@ -123,6 +129,18 @@ div#content h2
 div#content hr
 {
   margin: 30pt 0;
+}
+
+div#bottom
+{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: #444;
+  color: #ccc;
+  text-align: center;
+  padding: 20pt 0;
+  border-top: 1pt solid #000;
 }
 
 input
@@ -166,4 +184,14 @@ hr
     margin: 0;
     border: 0;
     border-top: 1px solid rgba(0,0,0,0.5);
+}
+
+/* Scoreboard (and other tables eventually) */
+div#content table tr th
+{
+  font-weight: 400;
+}
+div#content table td
+{
+  padding: 5px 10px;
 }

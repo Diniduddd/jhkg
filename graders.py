@@ -4,8 +4,11 @@
 
 # The "YOLO" grader. Any answer is right because YOLO.
 def yolo(data, output):
-    return True
+    return 100
 
 # The "split sum" grader. Sums the space-separated integers.
 def splitsum(data, output):
-    return str(sum(map(int, data.split()))) == output
+    if str(sum(map(int, data.split()))) == output:
+        return 100
+    else:
+        return 0

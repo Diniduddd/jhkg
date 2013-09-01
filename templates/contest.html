@@ -39,25 +39,26 @@
 
 {% if username %}
 
-{% if p.name in user_solved %}
-You've solved this problem.
+{% if p.name in user_solved and user_solved[p.name] > 0 %}
+<p>You earned {{ user_solved[p.name] }} points in this problem.</p>
+<button id='solve_{{ p.name | uidify }}'>try again?</button>
 {% else %}
+<button id='solve_{{ p.name | uidify }}'>attempt to solve</button>
+{% endif %}
 
-<button id='solve_{{ p.name }}'>attempt to solve this problem</button>
-<div id='panel_{{ p.name }}' style='display:none'>
+<div id='panel_{{ p.name | uidify }}' style='display:none'>
     Input<br />
-    <textarea id='data_{{ p.name }}'></textarea><br />
-    <textarea id='textarea_{{ p.name }}' placeholder='Paste your output here'></textarea><br />
-    <button id='submit_{{ p.name }}'>submit!</button>
+    <textarea id='data_{{ p.name | uidify }}'></textarea><br />
+    <textarea id='textarea_{{ p.name | uidify }}' placeholder='Paste your output here'></textarea><br />
+    <button id='submit_{{ p.name | uidify }}'>submit!</button>
 </div>
 
 <script>
-// scopehack
-$('#solve_{{ p.name }}').click(function(){ solve_prob('{{p.name}}'); })
-$('#submit_{{ p.name }}').click(function(){ submit_prob('{{p.name}}'); })
+// sets the solve/submit buttons to perform actions
+$('#solve_{{ p.name | uidify }}').click(function(){ solve_prob('{{p.name}}'); })
+$('#submit_{{ p.name | uidify }}').click(function(){ submit_prob('{{p.name}}'); })
 </script>
 
-{% endif %}
 {% endif %}
 {% endfor %}
 
@@ -66,19 +67,19 @@ function solve_prob(name) {
     $.post('/contest_data',
         { problem:name },
         function (data) {
-            $('#data_'+name).html(data);
-            $('#panel_'+name).css('display', 'block');
+            $('#data_'+name.replace(/\ /g, '-')).html(data);
+            $('#panel_'+name.replace(/\ /g, '-')).css('display', 'block');
         }
     );
 }
 function submit_prob(name) {
     $.post('/contest_submit',
         { problem:name,
-          submission:$('#textarea_'+name).val()
+          submission:$('#textarea_'+name.replace(/\ /g, '-')).val()
         },
         function(data) {
             alert(data);
-            document.location.href = '/contest/{{contest.name}}';
+            document.location.href = '/contest/{{contest.name | uidify}}';
         }
     );
 }
