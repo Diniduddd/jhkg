@@ -232,19 +232,21 @@ def contest_submission():
     if problem:
         grader_name = problem.grader
         gr_func = getattr(graders, grader_name)
-        score = gr_func(given_data[g.user], submission)
-        if score:
+        base_score = gr_func(given_data[g.user], submission)
+        if base_score:
             # They were right!
             # Add bonus points for time
             contest = db.get_contest(problem.contest)
-            time_elapsed = g.now - contest.start_time
-            score += round(100-100*(time_elapsed.total_seconds()/contest.duration.total_seconds()))
-
-            db.set_score(g.user, problem.uid, score)
-            
-            return 'You got %d points!' % score
+            if g.now < contest.start_time + contest.duration:
+                # Contest is still ongoing; give them points!
+                time_elapsed = g.now - contest.start_time
+                time_bonus = round(100-100*(time_elapsed.total_seconds()/contest.duration.total_seconds()))
+                db.set_score(g.user, problem.uid, base_score+time_bonus)
+                return 'Well done. You got %d points and a time bonus of %d!' % (base_score, time_bonus)
+            else:
+                return 'Well done. This contest is over, but you would have gotten %d points!' % base_score
         else:
-            return 'Incorrect.'
+            return 'Incorrect. Keep trying!'
     else:
         return 'What exactly are you trying to do?'
 
