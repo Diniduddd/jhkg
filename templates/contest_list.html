@@ -16,7 +16,7 @@
 <h2>{{ c.name }}</h2>
 <p>{{ c.desc }}</p>
 
-<p id="countdown">Starts in some time</p>
+<p id="countdown">Starts at {{ localtime(c.start_time) | prettydatetime }}</p>
 <script>
 var interval;
 var end_time = new Date().getTime() / 1000 + {{ (c.start_time - now).total_seconds() }} * 1;
@@ -36,7 +36,7 @@ interval = setInterval(function() {
     else {
         var rem_min = Math.floor(remaining / 60);
         var rem_sec = Math.floor(remaining % 60);
-        cd.html(rem_min + ":" + rem_sec);
+        cd.html("Starts in " + remaining + " seconds.");
     }
 }, 100);
 </script>
