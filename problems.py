@@ -17,7 +17,7 @@ problem_list = [
         "viking_olympics"
         ]
 
-words = open('cracklib-small').read().split()
+#words = open('cracklib-small').read().split()
 
 # The "YOLO" problem. Data is nonsensical Japanese. Solution is anything.
 class yolo:
