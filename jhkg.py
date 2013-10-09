@@ -7,8 +7,8 @@ from flask import Flask, Markup, render_template, send_from_directory, redirect,
 import db
 from db import uidify
 from datetime import datetime, timedelta
-import inputgen
-import graders
+import problems
+from markdown import markdown
 
 app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
@@ -17,6 +17,8 @@ admins = {'admin'}
 
 # Stores the data that we gave each user.
 given_data = {}
+# Stores the seed that we gave each user.
+given_seed = {}
 # Stores the time at which the data were given.
 given_time = {}
 
@@ -27,6 +29,10 @@ given_time = {}
 def localtime(t):
     return t-g.timezone
 app.jinja_env.globals['localtime'] = localtime
+
+# Converts time from user's local timezone.
+def from_localtime(t):
+    return t+g.timezone
 
 # Pretty formatting of date and time
 @app.template_filter('prettydate')
@@ -145,7 +151,9 @@ def admin():
 def admin_newproblem():
     if g.user in admins:
         contests = db.get_upcoming_contests()
-        return my_render_template('admin_newproblem.html', contests=contests)
+        return my_render_template('admin_newproblem.html',
+                contests=contests,
+                graders=problems.problem_list)
     else:
         return page_not_found()
 
@@ -175,6 +183,8 @@ def admin_newcontest_action():
     name = request.form["name"]
     desc = request.form["description"]
     start_time = request.form["start_time"]
+    start_time = datetime(*map(int, start_time.replace('-', ' ').replace(':', ' ').split()))
+    start_time = from_localtime(start_time)
     db.new_contest(name, desc, start_time)
     return redirect('/admin')
 
@@ -216,10 +226,11 @@ def contest_data():
     problem = db.get_problem(request.form["problem"])
     if problem:
         grader_name = problem.grader
-        gen = getattr(inputgen, grader_name)()
-        given_data[g.user] = gen
+        data, seed = getattr(problems, grader_name).generate()
+        given_data[g.user] = data
+        given_seed[g.user] = seed
         given_time[g.user] = g.now
-        return gen
+        return data
     else:
         return "I don't know that problem, dude."
 
@@ -230,9 +241,9 @@ def contest_submission():
     submission = request.form["submission"]
     problem = db.get_problem(problem_name)
     if problem:
-        grader_name = problem.grader
-        gr_func = getattr(graders, grader_name)
-        base_score = gr_func(given_data[g.user], submission)
+        problem_name = problem.grader
+        gr_func = getattr(problems, problem_name).verify
+        base_score = gr_func(given_data[g.user], given_seed[g.user], submission)
         if base_score:
             # They were right!
             # Add bonus points for time
@@ -251,10 +262,16 @@ def contest_submission():
         return 'What exactly are you trying to do?'
 
 # Page for individual problems.
-#@app.route('/problem/<problem_name>')
-#def show_problem(problem_name):
-#    problem = db.get_problem(problem_name)
-#    return my_render_template('problem.html', problem=problem)
+@app.route('/problem/<problem_name>')
+def show_problem(problem_name):
+    try:
+        safe_name = "".join(c for c in problem_name if c.isalnum() or c in "-").rstrip()
+        prob_file = open('problems/%s' % safe_name)
+        problem = markdown(prob_file.read().decode('utf-8'))
+        prob_file.close()
+        return my_render_template('problem.html', problem=problem)
+    except IOError:
+        return page_not_found()
 
 # Home.
 @app.route('/')

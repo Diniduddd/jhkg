@@ -5,8 +5,14 @@
 <form id='login' action='/admin/new_problem/action' method='post'>
     <input name='name' type='text' placeholder="name" /><br />
     <textarea name='description' placeholder="problem statement" /></textarea><br />
-    <input name='grader' type='text' placeholder="grader" /><br />
-    Contest: <select name='contest'>
+    Grader:
+    <select name='grader'>
+        {% for g in graders %}
+        <option value='{{g}}'>{{g}}</option>
+        {% endfor %}
+    </select><br />
+    Contest:
+    <select name='contest'>
         {% for c in contests %}
         <option value='{{c.name}}'>{{c.name}}</option>
         {% endfor %}

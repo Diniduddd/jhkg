@@ -168,14 +168,13 @@ def get_contest(name):
               first()
     return contest
 
-def new_contest(name, desc, start_time):
+def new_contest(name, desc, start_time, duration=timedelta(hours=3)):
     """
     creates a new contest.
-    start_time is a string in the format "yyyy-mm-dd hh:mm"
+    start_time is a datetime
     """
     session = Session()
-    start_time_datetime = datetime(*map(int, start_time.replace('-', ' ').replace(':', ' ').split()))
-    new_contest = Contest(name, desc, start_time_datetime)
+    new_contest = Contest(name, desc, start_time, duration=duration)
     session.add(new_contest)
     session.commit()
     return 'i tried'
@@ -234,10 +233,14 @@ def populate():
     Populates the database with test data.
     """
     now = datetime.utcnow()
-    create_new_user('admin', 'admin', 'admin@admin.tk', school='MIT')
-    new_contest('IOI Live Now', 'Brave The Seas With IOI Live NoW!', (now-timedelta(hours=2)).strftime('%Y-%m-%d %H:%M'))
-    new_contest('IOI Qualification Round 1', 'IOI 2014 Qualification Round 1', (now+timedelta(hours=1, minutes=15)).strftime('%Y-%m-%d %H:%M'))
-    new_contest('JHKG 2013 Round 1', 'The first round in the JHKG High Koding Games', '2013-09-17 15:15')
-    new_contest('The Past Contest, Yo', 'This already happened!', '2012-09-17 15:15')
-    new_problem('yolo', 'Submit anything to get full marks.', 'yolo', 'IOI Live Now')
-    new_problem('split sums', 'You will be given a text box with 100 positive integers. Their sum is below 2^32. You must compute their sum. You will have four minutes to paste their sum in the solution box.', 'splitsum', 'IOI Live Now')
+    create_new_user('admin', 'cakelyisgood', 'admin@admin.tk', school='MIT')
+    create_new_user('testuser', 'user', 'user@user.tk', school='WCI')
+    new_contest('Test contest', 'Just a test contest', now-timedelta(hours=1))
+    #new_contest('JHKG Round 0', 'The first ever JHKG contest. A "beta" for the actual thing.', datetime(2013, 11, 8, 15, 10, 0))
+    new_contest('JHKG Round 0', 'The first ever JHKG contest. A "beta" for the actual thing.', now+timedelta(minutes=1))
+    #new_contest('JHKG 2013 Round 1', 'The first round in the JHKG High Koding Games', '2013-09-17 15:15')
+    #new_contest('The Past Contest, Yo', 'This already happened!', '2012-09-17 15:15')
+    new_problem('yolo', 'Submit anything to get full marks.', 'yolo', 'Test contest')
+    new_problem('split sums', 'You will be given a text box with 100 positive integers. Their sum is below 2^32. You must compute their sum. You will have four minutes to paste their sum in the solution box.', 'splitsum', 'Test contest')
+    new_problem('ASCII Triangle', '<a href="/problem/ascii-triangle">Problem description</a>', 'ascii_triangle', 'JHKG Contest 0')
+    new_problem('Viking Olympics', '<a href="/problem/viking-olympics">Problem description</a>', 'viking_olympics', 'JHKG Contest 0')

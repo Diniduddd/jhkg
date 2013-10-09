@@ -7,12 +7,12 @@
 /* Keep vertical scrollbar visible to prevent centering jumps */
 html
 {
-  overflow-y: scroll
   height: 100%;
 }
 
 body
 {
+  overflow-y: scroll;
   background-color: #fff;
   height: 100%;
 }
@@ -33,14 +33,9 @@ button
 div#topbar
 {
   width: 100%;
-  color: #ccc;
-  background-color: #993333;
-  border-bottom: 1px solid black;
-}
-
-div#topbar a
-{
-  color: #D8ABAB;
+  color: #666;
+  /* background-color: #993333; */
+  border-bottom: 2px solid black;
 }
 
 div#top
@@ -55,17 +50,24 @@ div#top a
 {
   display: inline-block;
 }
+div#top a:hover
+{
+  background: transparent;
+}
 
 /* nav buttons */
 div#top #nav a.navbutton
 {
+  font-weight: 600;
   padding: 10pt 8pt 10pt 8pt;
-  color: #fff;
+  color: #000;
   text-decoration: none;
 }
-div#top #nav a.navbutton:hover
+div#top #nav a.navbutton:hover,
+div#top #nav a.cur_page
 {
-  background-color: #822;
+  color: #fff;
+  background-color: #000;
 }
 
 /* top logo. */
@@ -101,12 +103,12 @@ div#content
 
 div#content a
 {
-    color: #CE1D1D;
+  color: #c11;
 }
 div#content a:hover
 {
   color: #fff;
-  background: #CE1D1D;
+  background: #c11;
 }
 
 /* Paragraphs and headers */
@@ -136,11 +138,11 @@ div#bottom
   position: absolute;
   bottom: 0;
   width: 100%;
-  background-color: #444;
+  background-color: #333;
   color: #ccc;
   text-align: center;
   padding: 20pt 0;
-  border-top: 1pt solid #000;
+  border-top: 2px solid #888;
 }
 
 input

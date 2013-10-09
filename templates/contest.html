@@ -19,9 +19,9 @@
 
 {# Contest is in future #}
 {% else %}
-<p>{{ localtime(contest.start_time) | prettydate }}</p>
-<p>Will start at {{ localtime(contest.start_time) | prettytime }}.</p>
-<p>Will last {{ contest.duration }}.</p>
+
+<p>Wait a second, this contest hasn't started yet! What are you trying to do?</p>
+
 {% endif %}
 
 {#
@@ -35,7 +35,7 @@
 {% for p_num,p in problems %}
 
 <h2>Problem {{ p_num }}: {{ p.name }}</h2>
-<p>{{ p.desc }}</p>
+<p>{{ p.desc | safe }}</p>
 
 {% if username %}
 
@@ -67,15 +67,15 @@ function solve_prob(name) {
     $.post('/contest_data',
         { problem:name },
         function (data) {
-            $('#data_'+name.replace(/\ /g, '-')).html(data);
-            $('#panel_'+name.replace(/\ /g, '-')).css('display', 'block');
+            $('#data_'+name.toLowerCase().replace(/\ /g, '-')).html(data);
+            $('#panel_'+name.toLowerCase().replace(/\ /g, '-')).css('display', 'block');
         }
     );
 }
 function submit_prob(name) {
     $.post('/contest_submit',
         { problem:name,
-          submission:$('#textarea_'+name.replace(/\ /g, '-')).val()
+          submission:$('#textarea_'+name.toLowerCase().replace(/\ /g, '-')).val()
         },
         function(data) {
             alert(data);

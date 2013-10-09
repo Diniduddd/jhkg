@@ -6,17 +6,41 @@
 <h1>Current contest</h1>
 {% for c in current_contests %}
 <h2><a href='/contest/{{ c.uid }}'>{{ c.name }}</a></h2>
-<p>Started at {{ c.start_time.strftime('%A %B %d, %Y at %H:%M') }}.</p>
-<p>Will end at at {{ (c.start_time+c.duration).strftime('%A %B %d, %Y at %H:%M') }}.</p>
 <p>{{ c.desc }}</p>
 {% endfor %}
 {% endif %}
 
 {% if upcoming_contests %}
 <h1>Upcoming contests</h1>
-{% for c in upcoming_contests %}
-<h2><a href='/contest/{{ c.uid }}'>{{ c.name }}</a></h2>
+{% for c in upcoming_contests[:1] %}
+<h2>{{ c.name }}</h2>
 <p>{{ c.desc }}</p>
+
+<p id="countdown">Starts in some time</p>
+<script>
+var interval;
+var end_time = new Date().getTime() / 1000 + {{ (c.start_time - now).total_seconds() }} * 1;
+
+interval = setInterval(function() {
+    var cd = $('#countdown');
+    var cur_time = new Date().getTime() / 1000;
+    var remaining = Math.ceil(end_time - cur_time);
+    if (remaining < -1) {
+        clearInterval(interval);
+        cd.html("Start!");
+        document.location.href = '/contest/{{ c.uid }}';
+    }
+    else if (remaining < 0) {
+        cd.html("Start!");
+    }
+    else {
+        var rem_min = Math.floor(remaining / 60);
+        var rem_sec = Math.floor(remaining % 60);
+        cd.html(rem_min + ":" + rem_sec);
+    }
+}, 100);
+</script>
+
 {% endfor %}
 {% endif %}
 

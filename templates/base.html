@@ -3,7 +3,8 @@
 <head>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8' />
     <title>{% block title %}JHKG. a coding contest.{% endblock %}</title>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script -->
+    <script src="/static/jquery.min.js"></script>
     <!-- Include the excellent Dosis font. -->
     <link href='http://fonts.googleapis.com/css?family=Dosis:300' rel='stylesheet' type='text/css'>
     <link href='/static/style.css' rel='stylesheet' />
@@ -23,16 +24,19 @@
             </a>
         </span>
         <span id='nav'>
-            <a href='/about' class='navbutton'>About</a>
-            <a href='/scoreboard' class='navbutton'>Scoreboard</a>
-            <a href='/contests' class='navbutton'>Contest</a>
+            {% for location, text in [
+            ('/contests', 'Contest'),
+            ('/scoreboard', 'Scoreboard'),
+            ] %}
+            <a href='{{ location }}' class='navbutton{% if request.path.startswith(location) %} cur_page{% endif %}'>{{ text }}</a>
+            {% endfor %}
             <span style='float:right'>
                 {% if username %}
-                Logged in as <a href='/user/{{ username }}'>{{ username }}</a>.
-                <a href='/logout' class='navbutton'>Logout</a>
+                <a href='/user/{{ username }}' class='navbutton{% if request.path.startswith('/user/%s' % username) %} cur_page{% endif %}'>{{ username }}</a>
+                <a href='/logout' class='navbutton{% if request.path.startswith('/logout') %} cur_page{% endif %}'>Logout</a>
                 {% else %}
-                <a href='/register' class='navbutton'>Register</a>
-                <a href='/login' class='navbutton'>Login</a>
+                <a href='/register' class='navbutton{% if request.path.startswith('/register') %} cur_page{% endif %}'>Register</a>
+                <a href='/login' class='navbutton{% if request.path.startswith('/login') %} cur_page{% endif %}'>Login</a>
                 {% endif %}
             </span>
         </span>
@@ -42,9 +46,11 @@
 {% block content %}
 {% endblock %}
 </div>
+<!--
 <div id="bottom">
     JHKG is jouhou kagaku. Believe it!
 </div>
+-->
 </div>
 </body>
 </html>

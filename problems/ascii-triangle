@@ -1,0 +1,31 @@
+# Ascii Triangle
+
+The JHGK construction company needs triangular building blocks to construct the next tallest building in the world. There is just one requirement: they need to be made with hashtags (for the actual triangle) and hashtags (for the rest of the rectangle surrounding it. They've hired you to write a program to help generate these triangles. Don't let them down.
+
+The first line of the input will contain an integer N - the number of test cases. The next N lines will each contain a number h. For each h, output an ASCII triangle with height h. For example, for h=3, output
+
+    ..#..
+    .###.
+    #####
+
+## Example input
+
+    4
+    1
+    2
+    3
+    5
+
+## Example output
+    
+    #
+    .#.
+    ###
+    ..#..
+    .###.
+    #####
+    ....#....
+    ...###...
+    ..#####..
+    .#######.
+    #########

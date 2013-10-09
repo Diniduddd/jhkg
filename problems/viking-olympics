@@ -1,0 +1,32 @@
+# The Viking Olympics
+
+Your class is participating in the Viking Olympics! To win the Viking Olympics, you must find the Key Word. Your class runs around the school doing various activities to collect letters. You know that these letters will NOT be in the Key Word. Luckily, you also have a list of all the words in the English language!
+
+Write a program to filter these words, outputting only those that do not contain any of the letters that your class has already found.
+
+The first line of the input will be a positive integer N, 1 ≤ N ≤ 20, the number of letters that your class has already found. The following N lines each contain a letter that is not in the Key Word. The following line contains a positive integer M, 1 ≤ M ≤ 1000, the number of words in your list of all the words in the English language. 
+
+You may assume that all letters are lowercase.
+
+## Example input
+    
+    6
+    r
+    s
+    t
+    l
+    n
+    e
+    5
+    swordfish
+    syzygy
+    pick
+    primary
+    xyzzy
+    correct
+
+## Example output
+    
+    pick
+    xyzzy
+
