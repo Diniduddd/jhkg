@@ -236,7 +236,7 @@ def populate():
     create_new_user('admin', 'cakelyisgood', 'admin@admin.tk', school='MIT')
     create_new_user('testuser', 'user', 'user@user.tk', school='WCI')
     new_contest('Test contest', 'Just a test contest', now-timedelta(hours=1))
-    new_contest('JHKG Round 0', 'The first ever JHKG contest. A "beta" for the actual thing.', datetime(2013, 11, 8, 15, 10, 0))
+    new_contest('JHKG Round 0', 'The first ever JHKG contest. A "beta" for the actual thing.', datetime(2013, 10, 9, 19, 10, 0))
     #new_contest('JHKG Round 0', 'The first ever JHKG contest. A "beta" for the actual thing.', now+timedelta(minutes=1))
     #new_contest('JHKG 2013 Round 1', 'The first round in the JHKG High Koding Games', '2013-09-17 15:15')
     #new_contest('The Past Contest, Yo', 'This already happened!', '2012-09-17 15:15')
